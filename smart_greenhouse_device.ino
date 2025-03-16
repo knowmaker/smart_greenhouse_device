@@ -83,7 +83,7 @@ int soilMoistureThreshold2 = 50;
 int waterTempThreshold1 = 23;
 int waterTempThreshold2 = 23;
 int waterLevelThreshold = 2;
-int lightThreshold = true;
+bool lightThreshold = true;
 bool motionThreshold = true;
 
 unsigned long wateringStartTime = 0;
@@ -326,20 +326,20 @@ void checkSensors() {
 void controlDevices() {
   if (!manualWatering) {
     if (separateBedControl) {
-      if (soilMoisture1 < soilMoistureThreshold1 && waterLevelLow) {
+      if (soilMoisture1 < soilMoistureThreshold1 && waterLevelLow && waterTemp >= waterTempThreshold1) {
         controlWatering(1, 1);
       } else {
         controlWatering(1, 0);
       }
 
-      if (soilMoisture2 < soilMoistureThreshold2 && waterLevelLow) {
+      if (soilMoisture2 < soilMoistureThreshold2 && waterLevelLow && waterTemp >= waterTempThreshold2) {
         controlWatering(2, 1);
-      } else {;
+      } else {
         controlWatering(2, 0);
       }
     } else {
       int averageMoisture = (soilMoisture1 + soilMoisture2) / 2;
-      if (averageMoisture < (soilMoistureThreshold1 + soilMoistureThreshold2) / 2 && waterLevelLow) {
+      if (averageMoisture < (soilMoistureThreshold1 + soilMoistureThreshold2) / 2 && waterLevelLow && waterTemp >= (waterTempThreshold1 + waterTempThreshold2) / 2) {
         controlWatering(2, 1);
       } else {
         controlWatering(2, 0);
@@ -356,14 +356,14 @@ void controlDevices() {
   }
 
   if (!manualLighting) {
-    if (isDark && !isMotionDetected) {
+    if ((lightThreshold && isDark)  && (!motionThreshold || (motionThreshold && !isMotionDetected))) {
       controlLighting(1);
     } else {
       controlLighting(0);
     }
   }
 
-  if (!waterLevelLow && !curWateringState1 && !curWateringState2) {
+  if ((!waterLevelLow || waterLevelThreshold == 2) && !curWateringState1 && !curWateringState2) {
     controlWaterLevel(1);
   } else {
     controlWaterLevel(0);
