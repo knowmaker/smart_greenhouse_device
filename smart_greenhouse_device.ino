@@ -83,7 +83,7 @@ int soilMoistureThreshold2 = 50;
 int waterTempThreshold1 = 23;
 int waterTempThreshold2 = 23;
 int waterLevelThreshold = 2;
-int lightThreshold = 512;
+int lightThreshold = true;
 bool motionThreshold = true;
 
 unsigned long wateringStartTime = 0;
